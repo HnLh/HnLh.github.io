@@ -5,34 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>โปรแกรมคำนวณองศา</title>
     <style>
-        /* ส่วนของ CSS สำหรับตกแต่ง (จะใส่ในไฟล์ .css แยกก็ได้) */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-            text-align: center;
+        body { font-family: Arial, sans-serif; margin: 50px; text-align: center; }
+        #passwordContainer {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-        input, button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
-        #result {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #333;
-        }
+        #appContent { display: none; } /* ซ่อนเนื้อหาเว็บไว้ก่อน */
+        input, button { padding: 10px; margin: 10px; font-size: 16px; }
+        #result { margin-top: 20px; font-size: 1.2em; color: #333; }
     </style>
 </head>
 <body>
-    <h1>คำนวณองศาและ Quadrant</h1>
-    <label for="degreeInput">ป้อนองศา:</label>
-    <input type="number" id="degreeInput" placeholder="ใส่ตัวเลของศา">
-    <button onclick="calculateDegree()">คำนวณ</button>
-    <div id="result">
-        </div>
+    <div id="passwordContainer">
+        <h2>กรุณาป้อนรหัสผ่านเพื่อเข้าสู่เว็บไซต์</h2>
+        <input type="password" id="passwordInput" placeholder="รหัสผ่าน">
+        <button onclick="checkPassword()">เข้าสู่ระบบ</button>
+        <p id="passwordError" style="color: red;"></p>
+    </div>
+
+    <div id="appContent">
+        <h1>คำนวณองศาและ Quadrant</h1>
+        <label for="degreeInput">ป้อนองศา:</label>
+        <input type="number" id="degreeInput" placeholder="ใส่ตัวเลของศา">
+        <button onclick="calculateDegree()">คำนวณ</button>
+        <div id="result">
+            </div>
+    </div>
 
     <script>
-        // ส่วนของ JavaScript จะใส่ที่นี่ หรือในไฟล์ .js แยก
+        const CORRECT_PASSWORD = "Sigma"; // เปลี่ยนรหัสผ่านตรงนี้
+
+        function checkPassword() {
+            const enteredPassword = document.getElementById('passwordInput').value;
+            const passwordError = document.getElementById('passwordError');
+
+            if (enteredPassword === CORRECT_PASSWORD) {
+                document.getElementById('passwordContainer').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block'; // แสดงเนื้อหา
+            } else {
+                passwordError.textContent = "รหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง";
+            }
+        }
+
+        // โค้ด calculateDegree() ที่คุณมีอยู่แล้ว
         function calculateDegree() {
             let n = parseFloat(document.getElementById('degreeInput').value);
             let resultDiv = document.getElementById('result');
@@ -44,7 +65,7 @@
                 let adjustedN = n;
                 if (n > 360 || n < 0) {
                     adjustedN = n % 360;
-                    if (adjustedN < 0) { // จัดการกรณีติดลบ เช่น -90%360 ได้ -90 ต้องเป็น 270
+                    if (adjustedN < 0) {
                         adjustedN += 360;
                     }
                     output += `องศาที่เกิน 360 หรือติดลบ: ${adjustedN.toFixed(2)}<br>`;
@@ -53,8 +74,7 @@
                 if (adjustedN === 0 || adjustedN === 90 || adjustedN === 180 || adjustedN === 270 || adjustedN === 360) {
                     output += `เป็นองศาแกน: ${adjustedN.toFixed(2)}<br>`;
                 } else if (adjustedN > 0 && adjustedN < 90) {
-                    output += `Q1<br>ค่าเทียบแกน X: ${adjustedN.toFixed(2)}<br>All`;
-
+                    output += `Q1<br>ค่าเทียบแกน X: ${adjustedN.toFixed(2)}<br>ALL`;
                 } else if (adjustedN > 90 && adjustedN < 180) {
                     output += `Q2<br>ค่าเทียบแกน X: ${(180 - adjustedN).toFixed(2)}<br>Sin`;
                 } else if (adjustedN > 180 && adjustedN < 270) {
