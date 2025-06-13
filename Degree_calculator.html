@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมคำนวณองศา</title>
+    <style>
+        /* ส่วนของ CSS สำหรับตกแต่ง (จะใส่ในไฟล์ .css แยกก็ได้) */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            text-align: center;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>คำนวณองศาและ Quadrant</h1>
+    <label for="degreeInput">ป้อนองศา:</label>
+    <input type="number" id="degreeInput" placeholder="ใส่ตัวเลของศา">
+    <button onclick="calculateDegree()">คำนวณ</button>
+    <div id="result">
+        </div>
+
+    <script>
+        // ส่วนของ JavaScript จะใส่ที่นี่ หรือในไฟล์ .js แยก
+        function calculateDegree() {
+            let n = parseFloat(document.getElementById('degreeInput').value);
+            let resultDiv = document.getElementById('result');
+            let output = "";
+
+            if (isNaN(n)) {
+                output = "กรุณาป้อนตัวเลขที่ถูกต้อง";
+            } else {
+                let adjustedN = n;
+                if (n > 360 || n < 0) {
+                    adjustedN = n % 360;
+                    if (adjustedN < 0) { // จัดการกรณีติดลบ เช่น -90%360 ได้ -90 ต้องเป็น 270
+                        adjustedN += 360;
+                    }
+                    output += `องศาที่เกิน 360 หรือติดลบ: ${adjustedN.toFixed(2)}<br>`;
+                }
+
+                if (adjustedN === 0 || adjustedN === 90 || adjustedN === 180 || adjustedN === 270 || adjustedN === 360) {
+                    output += `เป็นองศาแกน: ${adjustedN.toFixed(2)}<br>`;
+                } else if (adjustedN > 0 && adjustedN < 90) {
+                    output += `Q1<br>ค่าเทียบแกน X: ${adjustedN.toFixed(2)}<br>All`;
+
+                } else if (adjustedN > 90 && adjustedN < 180) {
+                    output += `Q2<br>ค่าเทียบแกน X: ${(180 - adjustedN).toFixed(2)}<br>Sin`;
+                } else if (adjustedN > 180 && adjustedN < 270) {
+                    output += `Q3<br>ค่าเทียบแกน X: ${(adjustedN - 180).toFixed(2)}<br>Tan`;
+                } else if (adjustedN > 270 && adjustedN < 360) {
+                    output += `Q4<br>ค่าเทียบแกน X: ${(360 - adjustedN).toFixed(2)}<br>Cos`;
+                } else {
+                    output += `ค่าไม่ถูกต้องหรือไม่สามารถระบุได้<br>`;
+                }
+            }
+            resultDiv.innerHTML = output;
+        }
+    </script>
+</body>
+</html>
