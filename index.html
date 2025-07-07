@@ -1,92 +1,146 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมคำนวณองศา</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 50px; text-align: center; }
-        #passwordContainer {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255, 255, 255, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        #appContent { display: none; } /* ซ่อนเนื้อหาเว็บไว้ก่อน */
-        input, button { padding: 10px; margin: 10px; font-size: 16px; }
-        #result { margin-top: 20px; font-size: 1.2em; color: #333; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Vocab Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 2em auto; }
+    .hidden { display: none; }
+    .answer-list { margin-top: 1em; }
+    input[type="text"] { width: 100%; padding: 0.5em; }
+    button { padding: 0.5em 1em; }
+  </style>
 </head>
 <body>
-    <div id="passwordContainer">
-        <h2>กรุณาป้อนรหัสผ่านเพื่อเข้าสู่เว็บไซต์</h2>
-        <input type="password" id="passwordInput" placeholder="รหัสผ่าน">
-        <button onclick="checkPassword()">เข้าสู่ระบบ</button>
-        <p id="passwordError" style="color: red;"></p>
-    </div>
+  <h2>Vocabulary Quiz</h2>
+  <div id="setup">
+    <label>
+      Choose language:
+      <select id="lang">
+        <option value="t">Thai to English</option>
+        <option value="l">English to Thai</option>
+      </select>
+    </label>
+    <button onclick="startQuiz()">Start</button>
+  </div>
+  <div id="quiz" class="hidden">
+    <p id="qnum"></p>
+    <p id="question"></p>
+    <input type="text" id="answer" autocomplete="off" autofocus>
+    <button onclick="submitAnswer()">Submit</button>
+  </div>
+  <div id="result" class="hidden">
+    <h3 id="score"></h3>
+    <ul id="right-answers" class="answer-list"></ul>
+    <button onclick="startQuiz()">Play again</button>
+  </div>
+  <script>
+    // Vocabulary data
+    const eng_to_thai = {
+      "consider": "พิจารณา", "carry": "ถือ", "campaign": "รณรงค์", 
+      "combine": "รวมกัน", "communicate": "สื่อสาร", "compose": "แต่ง", "concentrate": "มุ่งมั่น",
+      "decide": "ตัดสินใจ", "develop": "พัฒนา", "declare": "ประกาศ", 
+      "decorate": "ตกแต่ง", "decrease": "ลดลง", "dedicate": "อุทิศ", 
+      "deduct": "หัก", "demonstrate": "สาธิต", "deny": "ปฏิเสธ", 
+      "depend": "ขึ้นอยู่กับ", "describe": "อธิบาย", "desire": "ต้องการ", 
+      "destroy": "ทำลาย", "detect": "ตรวจจับ", "dig": "ขุด", "digest": "ย่อยอาหาร", 
+      "disappear": "หาย", "discover": "ค้นพบ", "disobey": "ไม่เชื่อฟัง", "display": "แสดง",
+      "disturb": "รบกวน", "dive": "ดำน้ำ", "divide": "แบ่ง"
+    };
+    const thai_to_eng = {};
+    for (const [k, v] of Object.entries(eng_to_thai)) thai_to_eng[v] = k;
 
-    <div id="appContent">
-        <h1>คำนวณองศาและ Quadrant</h1>
-        <label for="degreeInput">ป้อนองศา:</label>
-        <input type="number" id="degreeInput" placeholder="ใส่ตัวเลของศา">
-        <button onclick="calculateDegree()">คำนวณ</button>
-        <div id="result">
-            </div>
-    </div>
+    // Quiz state
+    let lang = "t";
+    let questions = [];
+    let score = 0;
+    let qnum = 0;
+    let show_right = [];
+    let current_word = "";
 
-    <script>
-        const CORRECT_PASSWORD = "Sigma"; // เปลี่ยนรหัสผ่านตรงนี้
+    function startQuiz() {
+      lang = document.getElementById("lang").value;
+      score = 0;
+      qnum = 0;
+      show_right = [];
+      // Prepare 10 random questions
+      if (lang === "t") {
+        questions = shuffle(Object.keys(thai_to_eng)).slice(0, 10);
+      } else {
+        questions = shuffle(Object.keys(eng_to_thai)).slice(0, 10);
+      }
+      document.getElementById("setup").classList.add("hidden");
+      document.getElementById("result").classList.add("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+      nextQuestion();
+    }
 
-        function checkPassword() {
-            const enteredPassword = document.getElementById('passwordInput').value;
-            const passwordError = document.getElementById('passwordError');
+    function nextQuestion() {
+      if (qnum >= 10) {
+        showResult();
+        return;
+      }
+      current_word = questions[qnum];
+      document.getElementById("qnum").textContent = `Question ${qnum + 1}/10:`;
+      document.getElementById("question").textContent = current_word;
+      document.getElementById("answer").value = "";
+      document.getElementById("answer").focus();
+    }
 
-            if (enteredPassword === CORRECT_PASSWORD) {
-                document.getElementById('passwordContainer').style.display = 'none';
-                document.getElementById('appContent').style.display = 'block'; // แสดงเนื้อหา
-            } else {
-                passwordError.textContent = "รหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง";
-            }
+    function submitAnswer() {
+      const userAns = document.getElementById("answer").value.trim();
+      let correct = false;
+      if (lang === "t") {
+        correct = (userAns === thai_to_eng[current_word]);
+      } else {
+        correct = (userAns === eng_to_thai[current_word]);
+      }
+      if (correct) {
+        score++;
+      } else {
+        show_right.push(current_word);
+      }
+      qnum++;
+      nextQuestion();
+    }
+
+    function showResult() {
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("result").classList.remove("hidden");
+      document.getElementById("score").textContent = `Your score is ${score}`;
+      const ul = document.getElementById("right-answers");
+      ul.innerHTML = "";
+      for (const item of show_right) {
+        let right;
+        if (lang === "t") {
+          right = thai_to_eng[item];
+        } else {
+          right = eng_to_thai[item];
         }
+        const li = document.createElement("li");
+        li.textContent = `${item} the right answer is ${right}`;
+        ul.appendChild(li);
+      }
+      document.getElementById("setup").classList.remove("hidden");
+    }
 
-        // โค้ด calculateDegree() ที่คุณมีอยู่แล้ว
-        function calculateDegree() {
-            let n = parseFloat(document.getElementById('degreeInput').value);
-            let resultDiv = document.getElementById('result');
-            let output = "";
+    // Utility: shuffle array
+    function shuffle(array) {
+      let arr = array.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
-            if (isNaN(n)) {
-                output = "กรุณาป้อนตัวเลขที่ถูกต้อง";
-            } else {
-                let adjustedN = n;
-                if (n > 360 || n < 0) {
-                    adjustedN = n % 360;
-                    if (adjustedN < 0) {
-                        adjustedN += 360;
-                    }
-                    output += `องศาที่เกิน 360 หรือติดลบ: ${adjustedN.toFixed(2)}<br>`;
-                }
-
-                if (adjustedN === 0 || adjustedN === 90 || adjustedN === 180 || adjustedN === 270 || adjustedN === 360) {
-                    output += `เป็นองศาแกน: ${adjustedN.toFixed(2)}<br>`;
-                } else if (adjustedN > 0 && adjustedN < 90) {
-                    output += `Q1<br>ค่าเทียบแกน X: ${adjustedN.toFixed(2)}<br>ALL`;
-                } else if (adjustedN > 90 && adjustedN < 180) {
-                    output += `Q2<br>ค่าเทียบแกน X: ${(180 - adjustedN).toFixed(2)}<br>Sin`;
-                } else if (adjustedN > 180 && adjustedN < 270) {
-                    output += `Q3<br>ค่าเทียบแกน X: ${(adjustedN - 180).toFixed(2)}<br>Tan`;
-                } else if (adjustedN > 270 && adjustedN < 360) {
-                    output += `Q4<br>ค่าเทียบแกน X: ${(360 - adjustedN).toFixed(2)}<br>Cos`;
-                } else {
-                    output += `ค่าไม่ถูกต้องหรือไม่สามารถระบุได้<br>`;
-                }
-            }
-            resultDiv.innerHTML = output;
-        }
-    </script>
+    // Allow pressing Enter to submit
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("answer").addEventListener("keyup", function(e) {
+        if (e.key === "Enter") submitAnswer();
+      });
+    });
+  </script>
 </body>
 </html>
