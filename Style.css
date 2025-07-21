@@ -1,0 +1,80 @@
+body {
+  font-family: sans-serif;
+  max-width: 500px;
+  margin: 2em auto;
+  background-color: #121212;  /* พื้นหลังเป็นสีดำ */
+  color: white;               /* ข้อความเป็นสีขาว */
+}
+
+.hidden {
+  display: none;
+}
+
+.answer-list {
+  margin-top: 1em;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.6em;
+  background-color: #333;  /* พื้นหลังของ input เป็นสีเทา */
+  color: white;            /* ตัวหนังสือใน input เป็นสีขาว */
+  border: 1px solid #555;  /* ขอบของ input */
+  border-radius: 8px;
+  
+}
+
+#question {
+  text-align: center;  /* จัดข้อความให้อยู่กลาง */
+  font-size: 50px;
+  font-family: 'Calibri'; /* เปลี่ยนฟอนต์เป็น Calibri */
+  background-color: rgba(0, 0, 0, 0.5); /* พื้นหลังสีดำโปร่งใส */
+  padding: 20px;
+  border-radius: 12px;
+}
+
+
+#startBtn {
+  padding: 0.5em 1.5em;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;  /* ขอบมน */
+
+}
+
+#submit {
+  padding: 0.5em 1.5em;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;  /* ขอบมน */
+  position: relative;
+  top: 10px;
+
+}
+
+#playagainBtn{
+    padding: 0.5em 1.5em;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;  /* ขอบมน */
+
+}
+
+
+#startBtn:hover {
+  background-color: #45a049;  /* ปุ่มมีการเปลี่ยนสีเมื่อ hover */
+}
+
+#submit:hover {
+  background-color: #45a049;  /* ปุ่มมีการเปลี่ยนสีเมื่อ hover */
+}
+
+#playagainBtn:hover {
+  background-color: #45a049;  /* ปุ่มมีการเปลี่ยนสีเมื่อ hover */
+}
