@@ -4,13 +4,7 @@
   <meta charset="UTF-8">
   <title>Vocab Quiz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: sans-serif; max-width: 500px; margin: 2em auto; }
-    .hidden { display: none; }
-    .answer-list { margin-top: 1em; }
-    input[type="text"] { width: 100%; padding: 0.5em; }
-    button { padding: 0.5em 1em; }
-  </style>
+  <link rel="stylesheet" href="Style.css">
 </head>
 <body>
   <h2>Vocabulary Quiz</h2>
@@ -22,34 +16,37 @@
         <option value="l">English to Thai</option>
       </select>
     </label>
-    <button onclick="startQuiz()">Start</button>
+    <button id="startBtn" onclick="startQuiz()">Start</button>
   </div>
   <div id="quiz" class="hidden">
     <p id="qnum"></p>
     <p id="question"></p>
     <input type="text" id="answer" autocomplete="off" autofocus>
-    <button onclick="submitAnswer()">Submit</button>
+    <button id="submit" onclick="submitAnswer()">Submit</button>
   </div>
   <div id="result" class="hidden">
     <h3 id="score"></h3>
     <ul id="right-answers" class="answer-list"></ul>
-    <button onclick="startQuiz()">Play again</button>
+    <button id="playagainBtn" onclick="startQuiz()">Play again</button>
   </div>
   <script>
     // Vocabulary data
-    const eng_to_thai = {
-      "consider": "พิจารณา", "carry": "ถือ", "campaign": "รณรงค์", 
-      "combine": "รวมกัน", "communicate": "สื่อสาร", "compose": "แต่ง", "concentrate": "มุ่งมั่น",
-      "decide": "ตัดสินใจ", "develop": "พัฒนา", "declare": "ประกาศ", 
-      "decorate": "ตกแต่ง", "decrease": "ลดลง", "dedicate": "อุทิศ", 
-      "deduct": "หัก", "demonstrate": "สาธิต", "deny": "ปฏิเสธ", 
-      "depend": "ขึ้นอยู่กับ", "describe": "อธิบาย", "desire": "ต้องการ", 
-      "destroy": "ทำลาย", "detect": "ตรวจจับ", "dig": "ขุด", "digest": "ย่อยอาหาร", 
-      "disappear": "หาย", "discover": "ค้นพบ", "disobey": "ไม่เชื่อฟัง", "display": "แสดง",
-      "disturb": "รบกวน", "dive": "ดำน้ำ", "divide": "แบ่ง"
-    };
-    const thai_to_eng = {};
-    for (const [k, v] of Object.entries(eng_to_thai)) thai_to_eng[v] = k;
+    let eng_to_thai = {};
+    let thai_to_eng = {};
+
+    // Load JSON data
+    fetch('./eng_to_thai_full.json')
+      .then(response => response.json())
+      .then(data => {
+        eng_to_thai = data;
+        // Build reverse dictionary
+        thai_to_eng = {};
+        for (const [k, v] of Object.entries(eng_to_thai)) thai_to_eng[v] = k;
+        document.getElementById("startBtn").disabled = false;
+        document.getElementById("startBtn").textContent = "Start";
+      });
+      document.getElementById("startBtn").onclick = startQuiz;
+   
 
     // Quiz state
     let lang = "t";
@@ -119,7 +116,7 @@
           right = eng_to_thai[item];
         }
         const li = document.createElement("li");
-        li.textContent = `${item} the right answer is ${right}`;
+        li.innerHTML = `"<strong>${item}</strong>" the right answer is <strong><span style="color: #4CAF50;">${right}</span></strong>`;
         ul.appendChild(li);
       }
       document.getElementById("setup").classList.remove("hidden");
