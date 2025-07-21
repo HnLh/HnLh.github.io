@@ -44,6 +44,13 @@ input[type="text"] {
 
 }
 
+h2 {
+  text-align: center;  /* จัดกลางแนวนอน */
+}
+
+#setup{
+    text-align: center;
+}
 #submit {
   padding: 0.5em 1.5em;
   background-color: #4CAF50;
@@ -57,6 +64,7 @@ input[type="text"] {
 }
 
 #playagainBtn{
+
     padding: 0.5em 1.5em;
   background-color: #4CAF50;
   color: white;
